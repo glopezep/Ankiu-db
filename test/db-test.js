@@ -146,6 +146,26 @@ test('Save a product', async (t) => {
 
 test('Get a product by id', async (t) => {
   t.is(typeof AnkiuDb.getProduct, 'function', 'Should be a function');
+
+  const category = fixtures.getCategory();
+  let createdCategory = await AnkiuDb.saveCategory(category);
+  createdCategory = createdCategory.toJSON();
+
+  const product = fixtures.getProduct();
+  product.category_id = createdCategory.id;
+  let createdProduct = await AnkiuDb.saveProduct(product);
+  createdProduct = createdProduct.toJSON();
+
+  let result = await AnkiuDb.getProduct(createdProduct.id);
+  console.log(result)
+  console.log(result.relations)
+  result = result.toJSON();
+
+  t.is(result.id, createdProduct.id);
+  t.is(result.name, createdProduct.name);
+  t.is(result.price, createdProduct.price);
+  t.is(result.currency, createdProduct.currency);
+  t.is(result.category_id, createdProduct.category_id);
 });
 
 test.after('Clean up database', async (t) => {

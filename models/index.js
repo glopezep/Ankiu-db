@@ -2,12 +2,16 @@ import knexfile from '../lib/knex';
 
 const Category = knexfile.bookshelf.Model.extend({
   tableName: 'categories',
-  product: () => this.belongsTo(Product), //eslint-disable-line no-use-before-define
+  products() {
+    return this.belongsToMany(Product, 'id'); // eslint-disable-line no-use-before-define
+  },
 });
 
 const Product = knexfile.bookshelf.Model.extend({
   tableName: 'products',
-  category: () => this.hasOne(Category),
+  category() {
+    return this.hasOne(Category, 'id');
+  },
 });
 
 const Role = knexfile.bookshelf.Model.extend({
