@@ -157,8 +157,6 @@ test('Get a product by id', async (t) => {
   createdProduct = createdProduct.toJSON();
 
   let result = await AnkiuDb.getProduct(createdProduct.id);
-  console.log(result)
-  console.log(result.relations)
   result = result.toJSON();
 
   t.is(result.id, createdProduct.id);
@@ -167,6 +165,31 @@ test('Get a product by id', async (t) => {
   t.is(result.currency, createdProduct.currency);
   t.is(result.category_id, createdProduct.category_id);
 });
+
+test('Update a product', async (t) => {
+  const category = fixtures.getCategory();
+  let createdCategory = await AnkiuDb.saveCategory(category);
+  createdCategory = createdCategory.toJSON();
+
+  const product = fixtures.getProduct();
+  product.category_id = createdCategory.id;
+  let createdProduct = await AnkiuDb.saveProduct(product);
+  createdProduct = createdProduct.toJSON();
+
+  createdProduct.name = 'Apple Juice';
+  createdProduct.price = 500;
+  createdProduct.currency = 'USD$';
+  let result = await AnkiuDb.updateProduct(createdProduct.id, createdProduct);
+  result = result.toJSON();
+
+  t.is(result.id, createdProduct.id);
+  t.is(result.name, createdProduct.name);
+  t.is(result.price, createdProduct.price);
+  t.is(result.currency, createdProduct.currency);
+  t.is(result.category_id, createdProduct.category_id);
+});
+
+test.todo('Delete a product');
 
 test.after('Clean up database', async (t) => {
   t.is(typeof AnkiuDb.dropTables, 'function', 'Should be a function');
