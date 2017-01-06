@@ -12,6 +12,21 @@ function getRoles() {
   ];
 }
 
+function getUser(username) {
+  return {
+    username: username || 'glopezep',
+    password: '123456',
+  };
+}
+
+function getUsers() {
+  return [
+    getUser('glopezep'),
+    getUser('guillermo'),
+    getUser('enmanuel'),
+  ];
+}
+
 function getCategory(name) {
   return {
     name: name || 'Food',
@@ -37,6 +52,8 @@ function getProduct(name) {
 export default {
   getRole,
   getRoles,
+  getUser,
+  getUsers,
   getCategory,
   getCategories,
   getProduct,

@@ -18,8 +18,16 @@ const Role = knexfile.bookshelf.Model.extend({
   tableName: 'roles',
 });
 
+const User = knexfile.bookshelf.Model.extend({
+  tableName: 'users',
+  role() {
+    return this.hasOne(Role, 'id');
+  },
+});
+
 export default {
   Category: knexfile.bookshelf.model('Category', Category),
   Product: knexfile.bookshelf.model('Product', Product),
   Role: knexfile.bookshelf.model('Role', Role),
+  User: knexfile.bookshelf.model('User', User),
 };

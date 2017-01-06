@@ -166,10 +166,16 @@ test('Get a product by id', async (t) => {
   t.is(result.category_id, createdProduct.category_id);
 });
 
+test.todo('Get all products');
+
 test('Update a product', async (t) => {
   const category = fixtures.getCategory();
   let createdCategory = await AnkiuDb.saveCategory(category);
   createdCategory = createdCategory.toJSON();
+
+  const categorySecond = fixtures.getCategory();
+  let createdCategorySecond = await AnkiuDb.saveCategory(categorySecond);
+  createdCategorySecond = createdCategorySecond.toJSON();
 
   const product = fixtures.getProduct();
   product.category_id = createdCategory.id;
@@ -179,6 +185,7 @@ test('Update a product', async (t) => {
   createdProduct.name = 'Apple Juice';
   createdProduct.price = 500;
   createdProduct.currency = 'USD$';
+  createdProduct.category_id = createdCategorySecond.id;
   let result = await AnkiuDb.updateProduct(createdProduct.id, createdProduct);
   result = result.toJSON();
 
@@ -189,7 +196,93 @@ test('Update a product', async (t) => {
   t.is(result.category_id, createdProduct.category_id);
 });
 
-test.todo('Delete a product');
+test('Delete a product', async (t) => {
+  const category = fixtures.getCategory();
+  let createdCategory = await AnkiuDb.saveCategory(category);
+  createdCategory = createdCategory.toJSON();
+
+  const product = fixtures.getProduct();
+  product.category_id = createdCategory.id;
+  let createdProduct = await AnkiuDb.saveProduct(product);
+  createdProduct = createdProduct.toJSON();
+
+  const result = await AnkiuDb.deleteProduct(createdProduct.id);
+
+  t.falsy(result.id);
+  t.falsy(result.name);
+  t.falsy(result.price);
+  t.falsy(result.currency);
+  t.falsy(result.category_id);
+});
+
+test('Save user', async (t) => {
+  t.is(typeof AnkiuDb.saveUser, 'function', 'Should be a function');
+
+  const role = fixtures.getRole();
+  let createdRole = await AnkiuDb.saveRole(role);
+  createdRole = createdRole.toJSON();
+
+  const user = fixtures.getUser();
+  user.role_id = createdRole.id;
+  let createdUser = await AnkiuDb.saveUser(user);
+  createdUser = createdUser.toJSON();
+
+  t.truthy(createdUser.id);
+  t.is(createdUser.username, user.username);
+  t.is(createdUser.password, user.password);
+  t.is(createdUser.role_id, user.role_id);
+});
+
+test('Get user by id', async (t) => {
+  const role = fixtures.getRole();
+  let createdRole = await AnkiuDb.saveRole(role);
+  createdRole = createdRole.toJSON();
+
+  const user = fixtures.getUser();
+  user.role_id = createdRole.id;
+  let createdUser = await AnkiuDb.saveUser(user);
+  createdUser = createdUser.toJSON();
+
+  let result = await AnkiuDb.getUser(createdUser.id);
+  result = result.toJSON();
+
+  delete result.password;
+
+  t.is(result.id, createdUser.id);
+  t.is(result.username, createdUser.username);
+  t.is(result.role_id, createdUser.role_id);
+  t.falsy(result.password);
+});
+
+test('Get users', async (t) => {
+  await knex('roles').truncate();
+  await knex('users').truncate();
+
+  const roles = fixtures.getRoles();
+  const saveRoles = roles.map(role => AnkiuDb.saveRole(role));
+  await Promise.all(saveRoles);
+  let resultRoles = await AnkiuDb.getRoles();
+  resultRoles = resultRoles.toJSON();
+
+
+  let users = fixtures.getUsers();
+  users = users.map((user, index) => {
+    const newUser = user;
+    newUser.role_id = resultRoles[index].id;
+    return newUser;
+  });
+
+  const saveUsers = users.map(user => AnkiuDb.saveUser(user));
+  await Promise.all(saveUsers);
+
+  let resultUsers = await AnkiuDb.getUsers();
+  
+
+  t.truthy(users.length);
+  console.log(users);
+});
+test.todo('Update user');
+test.todo('Delete user');
 
 test.after('Clean up database', async (t) => {
   t.is(typeof AnkiuDb.dropTables, 'function', 'Should be a function');
