@@ -11,8 +11,7 @@ $ npm install ankiu-db --save
 ## Usage
 
 ``` js
-var tvmaze = require('tv-maze')
-var client = tvmaze.createClient()
+const AnkiuDb = require('ankiu-db')
 
 AnkiuDb.saveUser(user, function (err, user) {
   // do something with user
