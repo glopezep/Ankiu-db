@@ -17,11 +17,11 @@ AnkiuDb.saveUser(user, function (err, user) {
   // do something with user
 })
 
-client.getUser(userid, function (err, user) {
+AnkiuDb.getUser(userid, function (err, user) {
   // do something with users
 })
 
-client.getUsers(function (err, users) {
+AnkiuDb.getUsers(function (err, users) {
   // do something with users
 })
 
