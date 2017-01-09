@@ -29,6 +29,7 @@ test('Get a Role', async (t) => {
 
   t.is(result.get('id'), created.get('id'));
   t.is(result.get('name'), created.get('name'));
+  t.throws(AnkiuDb.getRole('2000'), /not found/);
 });
 
 test('Get Roles', async (t) => {
@@ -254,37 +255,37 @@ test('Get user by id', async (t) => {
   t.falsy(result.password);
 });
 
-test('Get users', async (t) => {
-  await knex('roles').truncate();
-  await knex('users').truncate();
-
-  const roles = fixtures.getRoles();
-  const saveRoles = roles.map(role => AnkiuDb.saveRole(role));
-  await Promise.all(saveRoles);
-  let resultRoles = await AnkiuDb.getRoles();
-  resultRoles = resultRoles.toJSON();
-
-
-  let users = fixtures.getUsers();
-  users = users.map((user, index) => {
-    const newUser = user;
-    newUser.role_id = resultRoles[index].id;
-    return newUser;
-  });
-
-  const saveUsers = users.map(user => AnkiuDb.saveUser(user));
-  await Promise.all(saveUsers);
-
-  let resultUsers = await AnkiuDb.getUsers();
-  
-
-  t.truthy(users.length);
-  console.log(users);
-});
+// test('Get users', async (t) => {
+//   await knex('roles').truncate();
+//   await knex('users').truncate();
+//
+//   const roles = fixtures.getRoles();
+//   const saveRoles = roles.map(role => AnkiuDb.saveRole(role));
+//   await Promise.all(saveRoles);
+//   let resultRoles = await AnkiuDb.getRoles();
+//   resultRoles = resultRoles.toJSON();
+//
+//
+//   let users = fixtures.getUsers();
+//   users = users.map((user, index) => {
+//     const newUser = user;
+//     newUser.role_id = resultRoles[index].id;
+//     return newUser;
+//   });
+//
+//   const saveUsers = users.map(user => AnkiuDb.saveUser(user));
+//   await Promise.all(saveUsers);
+//
+//   let resultUsers = await AnkiuDb.getUsers();
+//
+//
+//   t.truthy(users.length);
+//   console.log(users);
+// });
 test.todo('Update user');
 test.todo('Delete user');
 
-test.after('Clean up database', async (t) => {
+test.after.always('Clean up database', async (t) => {
   t.is(typeof AnkiuDb.dropTables, 'function', 'Should be a function');
   await AnkiuDb.dropTables();
 });
